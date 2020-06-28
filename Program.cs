@@ -15,22 +15,27 @@ namespace Do_An2
     {
         static void Main(string[] args)
         {
-            //Chọn loại tài khoản
-            string loaiTaiKhoan;
-            Console.Write("Admin nhap 1, User nhap 2: ");
-            loaiTaiKhoan = Console.ReadLine();
-
-
             //Khởi tạo các ds
             List<Admin> ds_admin = new List<Admin>();
             List<TheTu> ds_thetu = new List<TheTu>();
             List<ID> ds_id = new List<ID>();
             List<LSID> ds_lsid = new List<LSID>();
 
-            //Chương trình
+            //Nạp dữ liệu
             DocFile(ds_admin, ds_thetu, ds_id, ds_lsid);
+            //Chọn loại tài khoản
+            int loaiTaiKhoan;
+
+            do
+            {
+                Console.Clear();
+                Console.Write("Admin nhap 1, User nhap 2: ");
+                int.TryParse(Console.ReadLine(), out loaiTaiKhoan);
+            } while (loaiTaiKhoan != 1 && loaiTaiKhoan != 2);
+
+            //Chương trình
             kTra_DangNhap(ds_admin, ds_thetu, loaiTaiKhoan);
-            if (loaiTaiKhoan.Equals("1"))
+            if (loaiTaiKhoan == 1)
             {
                 Menu_Admin(ds_admin, ds_thetu, ds_id, ds_lsid);
             }
@@ -42,13 +47,15 @@ namespace Do_An2
         }
 
         //Kiểm tra đăng nhập cho cả Admin và User
-        static void kTra_DangNhap(List<Admin> a, List<TheTu> b, string loai) //Nếu loại = 1 là Admin, = 2 là User
+        static void kTra_DangNhap(List<Admin> a, List<TheTu> b, int loai) //Nếu loại = 1 là Admin, = 2 là User
         {
             string taiKhoan, matKhau;
-            int kT = 0, lanNhap = 0, sai, viTri;
+            int kT = 0, lanNhap = 0, hienThi, dong = 0;
 
-            if (loai.Equals("1"))
+            //Kiểm tra của Admin
+            if (loai == 1)
             {
+                //Kiểm tra theo kT đúng thì kT thành 1 và thoát vòng lập
                 do
                 {
                     Console.Clear();
@@ -66,20 +73,25 @@ namespace Do_An2
 
                     for (int i = 0; i < a.Count; i++)
                     {
-                        if (a[i].user == taiKhoan && a[i].pass == matKhau)
+                        if (string.Compare(a[i].user, taiKhoan) == 0 && string.Compare(a[i].pass, matKhau) == 0)
                         {
                             kT++;
                         }
                     }
                 } while (kT == 0);
             }
+            //Kiểm tra của User
             else
             {
+
                 do
                 {
-                    viTri = 0;
-                    sai = 0;
+                    if (lanNhap == 3)
+                    {
+                        lanNhap = 0;
+                    }
 
+                    hienThi = 0;
                     Console.Clear();
                     logo_DangNhapUser();
 
@@ -88,65 +100,96 @@ namespace Do_An2
                     Console.ResetColor();
                     taiKhoan = Console.ReadLine();
 
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.Write("{0,15}{1}", "", "Pin: ");
-                    Console.ResetColor();
-                    matKhau = Console.ReadLine();
-
                     for (int i = 0; i < b.Count; i++)
                     {
-                        viTri = i;
-                        if (b[i].id == taiKhoan)
+                        if (string.Compare(b[i].id, taiKhoan) == 0) //Kiểm tra tài khoản tồn tại hay không
                         {
-                            if (string.Compare(b[i].tinhTrang, "1") == 0)
+                            if (string.Compare(b[i].tinhTrang, "1") == 0) //Rồi kiểm tra trình trạng tài khoản
                             {
+                                dong = i; //Lấy dòng của TK
                                 do
                                 {
                                     Console.Clear();
                                     logo_DangNhapUser();
 
                                     Console.ForegroundColor = ConsoleColor.Magenta;
-                                    Console.Write("{0,15}{1}{2}", "", "User: ", b[i].id);
+                                    Console.Write("{0,15}{1}", "", "User: ");
+                                    Console.ResetColor();
+                                    Console.WriteLine(taiKhoan);
 
                                     Console.ForegroundColor = ConsoleColor.Magenta;
                                     Console.Write("{0,15}{1}", "", "Pin: ");
                                     Console.ResetColor();
                                     matKhau = Console.ReadLine();
-                                    if (b[i].maPin == matKhau)
+
+                                    if (string.Compare(b[i].maPin, matKhau) == 0) //Sau cùng kiểm tra mật khẩu
                                     {
-                                        kT++;
+                                        kT++; //Trường hợp thỏa tất cả điều kiện
                                     }
                                     else
                                     {
-                                        lanNhap++;
-                                        if (lanNhap == 3)
+                                        lanNhap++; //Trường hợp sai mật khẩu
+                                        if (lanNhap != 3)
                                         {
-                                            b[i].tinhTrang = "0";
-                                            Console.Write("Khoa tai khoan!!!");
+                                            Console.WriteLine("Mat khau sai. Nhap lai!!!");
+                                            Console.ReadKey();
                                         }
                                     }
-                                } while (b[i].maPin != matKhau && lanNhap < 3);
+                                } while (kT == 0 && lanNhap != 3);
                             }
-                            if (string.Compare(b[i].tinhTrang, "0") == 0)
+                            else
                             {
-                                Console.WriteLine("Tai khoan nay dang bi khoa!!!");
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Tai khoan nay hien dang bi khoa!!!");
+                                Console.ResetColor();
                                 Console.ReadKey();
-                                break;
+                                hienThi++;
                             }
                         }
+
                     }
 
-                    if (viTri == b.Count)
+                    if (lanNhap == 3) //Khóa TK
                     {
-                        Console.Write("Tai khoan hoac mat khau sai, nhap lai!!!");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Khoa tai khoan!!!");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        hienThi++;
+
+                        //Sửa trong file
+                        using (StreamWriter sw = new StreamWriter(@"D:\Do_An\Do_An2\TheTu.txt"))
+                        {
+                            sw.WriteLine(b.Count);
+                            for (int i = 0; i < b.Count; i++)
+                            {
+                                if (i == dong)
+                                {
+                                    sw.WriteLine("0#" + b[i].id + "#" + b[i].maPin);
+                                }
+                                else
+                                {
+                                    sw.WriteLine(b[i].tinhTrang + "#" + b[i].id + "#" + b[i].maPin);
+                                }
+                            }
+                        }
+
+                        //Sửa trong chương trình  
+                        b[dong].tinhTrang = "0";
+                    }
+
+                    if (kT == 0 && hienThi == 0) //Trường hợp sai TK hoặc MK
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Tai khoan hoac mat khau sai. Nhap lai!!!");
+                        Console.ResetColor();
                         Console.ReadKey();
                     }
                 } while (kT == 0);
-
             }
         }
 
-        //Admin
+        //Thành phần của Admin
         static void logo_DangNhapAdmin()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -180,26 +223,58 @@ namespace Do_An2
             Console.WriteLine("{0,15}{1}", "", "*************************");
             Console.ResetColor();
         }
-        static void XemDS(List<TheTu> b)
+        static void XemDS(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
         {
-            Console.Clear();
-            logo_XemDS();
-
-            for (int i = 0; i < b.Count; i++)
+            int chon;
+            do
             {
-                Console.WriteLine("{0,10}{1}{2}{3}", "", "----------Tai khoan thu: ", i + 1, "----------");
+                Console.Clear();
+                logo_XemDS();
 
-                Console.Write("ID: {0}", b[i].id);
-                Console.Write("\tMa PIN: {0}", b[i].maPin);
-                if (string.Compare(b[i].tinhTrang, "0") == 0)
+                for (int i = 0; i < b.Count; i++)
                 {
-                    Console.WriteLine("\tTinh trang: KHOA");
+                    Console.WriteLine("{0,10}{1}{2}{3}", "", "----------Tai khoan thu: ", i + 1, "----------");
+
+                    Console.Write("ID: {0}", b[i].id);
+                    Console.Write("\tMa PIN: {0}", b[i].maPin);
+                    if (string.Compare(b[i].tinhTrang, "0") == 0)
+                    {
+                        Console.WriteLine("\tTinh trang: KHOA");
+                    }
+                    else
+                    {
+                        Console.WriteLine("");
+                    }
                 }
-                else
+
+                Console.WriteLine("1.Quay lai");
+                Console.WriteLine("2.Thoat");
+                Console.Write("Chon chac nang: ");
+                int.TryParse(Console.ReadLine(), out chon);
+                if (chon == 1)
                 {
-                    Console.WriteLine("");
+                    Menu_Admin(a, b, c, d);
                 }
-            }
+                if (chon == 2)
+                {
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine("");
+                        Console.WriteLine("{0,5}{1}", "", "BAN MUON THOAT?");
+                        Console.WriteLine("{0}{1,10}{2}", "1.Co", "", "2.Quay lai");
+                        int.TryParse(Console.ReadLine(), out chon);
+                    } while (chon != 1 && chon != 2);
+                    if (chon == 1)
+                    {
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        XemDS(a, b, c, d);
+                    }
+                }
+            } while (chon != 1 && chon != 2);
         }
 
         static void logo_Them()
@@ -234,6 +309,8 @@ namespace Do_An2
             Console.WriteLine("{0,15}{1}", "", "*************************");
             Console.ResetColor();
         }
+
+        //4_Admin
         static void logo_MoKhoa()
         {
             ConsoleColor foreground = Console.ForegroundColor;
@@ -249,6 +326,125 @@ namespace Do_An2
             Console.WriteLine("*");
             Console.WriteLine("{0,15}{1}", "", "*************************");
             Console.ResetColor();
+        }
+        static void MoKhoa(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            int chon, kT = 0, dong =0;
+            string ID;
+            List<TheTu> khoa = new List<TheTu>();
+            do
+            {
+                Console.Clear();
+                logo_MoKhoa();
+
+                Console.WriteLine("{0,14}{1}", "", "DANH SACH TAI KHOAN BI KHOA\n\n");
+                for (int i = 0, j = 0; i < b.Count; i++)
+                {
+                    if (string.Compare(b[i].tinhTrang, "0") == 0)
+                    {
+                        Console.WriteLine("{0,10}{1}{2}{3}", "", "----------Tai khoan thu: ", ++j, "----------");
+                        Console.Write("ID: {0}", b[i].id);
+                        Console.WriteLine("\tMa PIN: {0}", b[i].maPin);
+                        Console.WriteLine("");
+                        khoa.Add(b[i]);
+                    }
+                }
+
+                Console.WriteLine("1.Mo khoa");
+                Console.WriteLine("2.Quay lai");
+                Console.WriteLine("3.Thoat");
+                Console.Write("Chon chac nang: ");
+                int.TryParse(Console.ReadLine(), out chon);
+                if (chon == 1)
+                {
+
+                    do
+                    {
+                        Console.Clear();
+                        logo_MoKhoa();
+
+                        Console.WriteLine("{0,14}{1}", "", "DANH SACH TAI KHOAN BI KHOA\n\n");
+                        for (int i = 0; i < khoa.Count; i++)
+                        {
+
+                            Console.WriteLine("{0,10}{1}{2}{3}", "", "----------Tai khoan thu: ", i + 1, "----------");
+                            Console.Write("ID: {0}", khoa[i].id);
+                            Console.WriteLine("\tMa PIN: {0}", khoa[i].maPin);
+                            Console.WriteLine("");
+                        }
+                        Console.Write("Nhap ID muon mo khoa: ");
+                        ID = Console.ReadLine();
+
+                        for (int i = 0; i < khoa.Count; i++)
+                        {
+                            if (string.Compare(ID, khoa[i].id) == 0)
+                            {
+                                for (int j = 0; j < b.Count; j++)
+                                {
+                                    if (string.Compare(ID, b[j].id) == 0)
+                                    {
+                                        dong = j;
+                                    }                                
+                                }
+                                //Sửa trong file
+                                using (StreamWriter sw = new StreamWriter(@"D:\Do_An\Do_An2\TheTu.txt"))
+                                {
+                                    sw.WriteLine(b.Count);
+                                    for (int j = 0; j < b.Count; j++)
+                                    {
+                                        if (j == dong)
+                                        {
+                                            sw.WriteLine("1#" + b[j].id + "#" + b[j].maPin);
+                                        }
+                                        else
+                                        {
+                                            sw.WriteLine(b[j].tinhTrang + "#" + b[j].id + "#" + b[j].maPin);
+                                        }
+                                    }
+                                }
+
+                                //Sửa trong chương trình  
+                                b[dong].tinhTrang = "1";
+                                kT++;
+                            }
+                        }
+                        if (kT == 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Nhap sai ID. Nhap lai!!!");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                        }
+                    } while (kT == 0);
+                    if (kT != 0)
+                    {
+                        MoKhoa(a, b, c, d);
+                    }
+                }
+                if (chon == 2)
+                {
+                    Menu_Admin(a, b, c, d);
+                }
+                if (chon == 3)
+                {
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine("");
+                        Console.WriteLine("{0,5}{1}", "", "BAN MUON THOAT?");
+                        Console.WriteLine("{0}{1,10}{2}", "1.Co", "", "2.Quay lai");
+                        int.TryParse(Console.ReadLine(), out chon);
+                    } while (chon != 1 && chon != 2);
+                    if (chon == 1)
+                    {
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        MoKhoa(a, b, c, d);
+                    }
+                }
+            } while (chon != 1 && chon != 2);
         }
 
         static void Menu_Admin(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
@@ -276,16 +472,28 @@ namespace Do_An2
 
             if (chucNang == 1)
             {
-                XemDS(b);
+                XemDS(a, b, c, d);
+            }
+            if (chucNang == 2)
+            {
+                
+            }
+            if (chucNang == 3)
+            {
+                
+            }
+            if (chucNang == 4)
+            {
+                MoKhoa(a, b, c, d);
             }
             if (chucNang == 5)
             {
-                kT_ThoatAdmin(a, b, c, d);
+                kT_Thoat(a, b, c, d, 1);
             }
         }
 
 
-        //User
+        //Thành phần của User
         static void logo_DangNhapUser()
         {
             ConsoleColor foreground = Console.ForegroundColor;
@@ -406,15 +614,34 @@ namespace Do_An2
                 int.TryParse(Console.ReadLine(), out chucNang);
             } while (chucNang < 1 || chucNang > 6);
 
+            if (chucNang == 1)
+            {
+                
+            }
+            if (chucNang == 2)
+            {
+               
+            }
+            if (chucNang == 3)
+            {
+                
+            }
+            if (chucNang == 4)
+            {
+                
+            }
+            if (chucNang == 5)
+            {
+                
+            }
             if (chucNang == 6)
             {
-                kT_ThoatUser(a, b, c, d);
+                kT_Thoat(a, b, c, d, 2);
             }
         }
-
 
         //Kiểm tra thoát
-        static void kT_ThoatAdmin(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        static void kT_Thoat(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d, int loai)
         {
             int kTThoat;
 
@@ -424,56 +651,41 @@ namespace Do_An2
                 Console.WriteLine("{0,5}{1}", "", "BAN MUON THOAT?");
                 Console.WriteLine("{0}{1,10}{2}", "1.Co", "", "2.Quay lai");
                 int.TryParse(Console.ReadLine(), out kTThoat);
-            } while (kTThoat < 1 || kTThoat > 2);
+            } while (kTThoat != 1 && kTThoat != 2);
             if (kTThoat == 1)
             {
                 Environment.Exit(0);
             }
             else
             {
-                Menu_Admin(a, b, c, d);
-            }
-        }
-        static void kT_ThoatUser(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
-        {
-            int kTThoat;
-
-            do
-            {
-                Console.Clear();
-                Console.WriteLine("{0,5}{1}", "", "BAN MUON THOAT?");
-                Console.WriteLine("{0}{1,10}{2}", "1.Co", "", "2.Quay lai");
-                int.TryParse(Console.ReadLine(), out kTThoat);
-            } while (kTThoat < 1 || kTThoat > 2);
-            if (kTThoat == 1)
-            {
-                Environment.Exit(0);
-            }
-            else
-            {
-                Menu_User(a, b, c, d);
+                if (loai == 1)
+                {
+                    Menu_Admin(a, b, c, d);
+                }
+                if (loai == 2)
+                {
+                    Menu_User(a, b, c, d);
+                }
             }
         }
 
         //Xuất dữ liệu
         static void Xuat(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
         {
-
-            DocFile(a, b, c, d);
-
+            Console.WriteLine("Admin");
             for (int i = 0; i < a.Count; i++)
             {
                 Console.WriteLine(a[i].user);
                 Console.WriteLine(a[i].pass);
             }
-
+            Console.WriteLine("TheTu");
             for (int i = 0; i < b.Count; i++)
             {
                 Console.WriteLine(b[i].tinhTrang);
                 Console.WriteLine(b[i].id);
                 Console.WriteLine(b[i].maPin);
             }
-
+            Console.WriteLine("ID");
             for (int i = 0; i < c.Count; i++)
             {
                 Console.WriteLine(c[i].id);
@@ -481,7 +693,7 @@ namespace Do_An2
                 Console.WriteLine(c[i].soDu);
                 Console.WriteLine(c[i].tienTe);
             }
-
+            Console.WriteLine("LSID");
             for (int i = 0; i < d.Count; i++)
             {
                 Console.WriteLine(d[i].id);
@@ -496,7 +708,7 @@ namespace Do_An2
         static void DocFile(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
         {
             //Khai báo
-            string file1 = "Admin", file2 = "TheTu", file3 = "", file4 = "";
+            string file1 = "Admin", file2 = "TheTu", file3 = "";
             string dauCach = "#";
 
             //Đọc file Admin
@@ -519,8 +731,11 @@ namespace Do_An2
                     admin.user = a2[0];
                     admin.pass = a2[1];
 
+
                     a.Add(admin);
                 }
+                sr.Close();
+
             }
             catch (Exception e)
             {
@@ -551,6 +766,7 @@ namespace Do_An2
 
                     b.Add(theTu);
                 }
+                srTheTu.Close();
 
                 for (int i = 0; i < b.Count; i++)
                 {
@@ -569,11 +785,10 @@ namespace Do_An2
                     id.tienTe = a2[3];
 
                     c.Add(id);
+                    srID.Close();
 
                     //File LSID
-                    file4 = b[i].id;
-
-                    StreamReader srLSID = new StreamReader(@"D:\Do_An\Do_An2\LSID\" + file4 + ".txt");
+                    StreamReader srLSID = new StreamReader(@"D:\Do_An\Do_An2\LSID\" + file3 + ".txt");
 
                     LSID lsid = new LSID();
                     line = srLSID.ReadLine();
@@ -585,6 +800,7 @@ namespace Do_An2
                     lsid.tG = a3[3];
 
                     d.Add(lsid);
+                    srLSID.Close();
                 }
             }
             catch (Exception e)
