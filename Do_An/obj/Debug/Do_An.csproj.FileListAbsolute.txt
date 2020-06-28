@@ -1,0 +1,5 @@
+D:\Do_An\Do_An\bin\Debug\Do_An.exe
+D:\Do_An\Do_An\bin\Debug\Do_An.pdb
+D:\Do_An\Do_An\obj\Debug\Do_An.csprojResolveAssemblyReference.cache
+D:\Do_An\Do_An\obj\Debug\Do_An.exe
+D:\Do_An\Do_An\obj\Debug\Do_An.pdb
