@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -526,7 +525,52 @@ namespace Do_An2
             Console.WriteLine("{0,15}{1}", "", "*************************");
             Console.ResetColor();
         }
-        static void logo_Rut()
+        static void Xem_TT(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            int chon;
+            do
+            {
+                Console.Clear();
+                logo_XemTT();
+
+                for (int i = 0; i < c.Count; i++)
+                {
+                    Console.Write("ID: {0}", c[i].id);
+                    Console.Write("\tTen: {0}", c[i].ten);
+                    Console.Write("\tTien Te: {0}", c[i].tienTe);
+                    Console.Write("\tSo Du: {0}", c[i].soDu);
+                }
+
+                Console.WriteLine("1.Quay lai");
+                Console.WriteLine("2.Thoat");
+                Console.Write("Chon chac nang: ");
+                int.TryParse(Console.ReadLine(), out chon);
+                if (chon == 1)
+                {
+                    Menu_User(a, b, c, d);
+                }
+                if (chon == 2)
+                {
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine("");
+                        Console.WriteLine("{0,5}{1}", "", "BAN MUON THOAT?");
+                        Console.WriteLine("{0}{1,10}{2}", "1.Co", "", "2.Quay lai");
+                        int.TryParse(Console.ReadLine(), out chon);
+                    } while (chon != 1 && chon != 2);
+                    if (chon == 1)
+                    {
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        Xem_TT(a, b, c, d);
+                    }
+                }
+            } while (chon != 1 && chon != 2);
+        }
+            static void logo_Rut()
         {
             ConsoleColor foreground = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -616,7 +660,7 @@ namespace Do_An2
 
             if (chucNang == 1)
             {
-                
+                Xem_TT(a, b, c, d);
             }
             if (chucNang == 2)
             {
@@ -708,9 +752,8 @@ namespace Do_An2
         static void DocFile(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
         {
             //Khai báo
-            string file1 = "Admin", file2 = "TheTu", file3 = "";
+            string file1 = "Admin", file2 = "TheTu", file3 = "ID";
             string dauCach = "#";
-
             //Đọc file Admin
             try
             {
@@ -803,6 +846,7 @@ namespace Do_An2
                     srLSID.Close();
                 }
             }
+            
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
