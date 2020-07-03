@@ -22,6 +22,7 @@ namespace Do_An2
 
             //Nạp dữ liệu
             DocFile(ds_admin, ds_thetu, ds_id, ds_lsid);
+            //Xuat(ds_admin, ds_thetu, ds_id, ds_lsid);
             //Chọn loại tài khoản
             int loaiTaiKhoan;
 
@@ -535,10 +536,10 @@ namespace Do_An2
 
                 for (int i = 0; i < c.Count; i++)
                 {
-                    Console.Write("ID: {0}", c[i].id);
-                    Console.Write("\tTen: {0}", c[i].ten);
-                    Console.Write("\tTien Te: {0}", c[i].tienTe);
-                    Console.Write("\tSo Du: {0}", c[i].soDu);
+                    Console.Write("\tID: {0}", c[i].id +"\n");
+                    Console.Write("\tTen: {0}", c[i].ten + "\n");
+                    Console.Write("\tTien Te: {0}", c[i].tienTe + "\n");
+                    Console.Write("\tSo Du: {0}", c[i].soDu + "\n");
                 }
 
                 Console.WriteLine("1.Quay lai");
@@ -634,7 +635,31 @@ namespace Do_An2
             Console.WriteLine("{0,15}{1}", "", "*************************");
             Console.ResetColor();
         }
+        static void Rut_Tien(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            Console.Clear();
+            logo_Rut();
+        }
+        static void Chuyen_Tien(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            Console.Clear();
+            logo_Chuyen();
+        }
+        static void XemND_GiaoDich(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            Console.Clear();
+            logo_GiaoDich();
+            //dieu kien
 
+            //chuc nang
+
+        }
+        static void Doi_MaPin(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
+        {
+            Console.Clear();
+            logo_DoiPin();
+
+        }
         static void Menu_User(List<Admin> a, List<TheTu> b, List<ID> c, List<LSID> d)
         {
             int chucNang;
@@ -664,19 +689,19 @@ namespace Do_An2
             }
             if (chucNang == 2)
             {
-               
+                Rut_Tien(a, b, c, d);
             }
             if (chucNang == 3)
             {
-                
+                Chuyen_Tien(a, b, c, d);
             }
             if (chucNang == 4)
             {
-                
+                XemND_GiaoDich(a, b, c, d);
             }
             if (chucNang == 5)
             {
-                
+                Doi_MaPin(a, b, c, d);
             }
             if (chucNang == 6)
             {
@@ -816,7 +841,7 @@ namespace Do_An2
                     //File ID
                     file3 = b[i].id;
 
-                    StreamReader srID = new StreamReader(file3 + ".txt");
+                    StreamReader srID = new StreamReader( file3 + ".txt");
 
                     ID id = new ID();
                     line = srID.ReadLine();
